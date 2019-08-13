@@ -1,0 +1,22 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+
+</head>
+<body>
+    <div class="body_page">
+        @RenderBody()
+    </div>
+
+    <script src="~/scripts/vue.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
