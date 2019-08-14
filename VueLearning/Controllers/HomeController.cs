@@ -13,5 +13,10 @@ namespace VueLearning.Controllers
         {
             return View();
         }
+
+        public ActionResult Begin()
+        {
+            return View();
+        }
     }
 }

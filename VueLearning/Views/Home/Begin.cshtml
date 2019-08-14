@@ -1,0 +1,197 @@
+﻿<div id="app-1">
+    <span v-once> 这个不变{{ a }}</span> {{ a }}
+    <span v-bind:id="a" v-html="rawHtml"></span>
+    <button v-bind:disabled="isButtonDisabled">Button</button>
+    {{a+1}}{{a===1?'yes':'no'}}
+    {{message.split('').reverse().join('')}}
+    <span v-bind:id="'span'+a">看我的id</span>
+</div>
+<div id="app-2">
+    @* 缩写 动态属性 *@
+    <a :[myattrname]="myhref">baidu</a>
+</div>
+<div id="app-3">
+    {{message}}<br />
+    {{reversedMessageComputed}}<br />
+    {{reversedMessage()}}<br />
+    {{currentTimeComputed}}<br />
+    {{currentTime()}}<br />
+    {{firstName}}<br />
+    {{lastName}}<br />
+    {{fullName}}<br />
+    <input v-model='fullName' />
+</div>
+<div id="app-4">
+    <p>
+        Ask a yes/no question:
+        <input v-model="question">
+    </p>
+    <p>{{ answer }}</p>
+</div>
+<div id="app-5">
+    <div class="static" v-bind:class="{active:isActive,error:hasError}">class绑定对象，根据属性关联的值确定是否加载class</div>
+    <div class="static" v-bind:class="classObject">class绑定对象</div>
+    <div class="static" v-bind:class="classObj">class绑定计算属性</div>
+    <div class="static" v-bind:class="[activeClass,errorClass]">class绑定列表</div>
+    <div class="static" v-bind:class="[isActive ? activeClass:'',errorClass]">class绑定，三元表达式</div>
+    <div class="static" v-bind:class="[{activeClassjj:isActive},errorClass]">class绑定，数组中使用对象表达式</div>
+</div>
+<div id="app-6">
+    <div v-bind:style="{color:activeColor,fontSize:fontSize+'px'}">
+        hahaha
+    </div>
+    @* 绑定对象不起作用？？
+    <div :style="styleObject">
+        hahaha
+    </div>*@
+    @*baseStyles什么样子？
+    <div v-bind:style="[baseStyles, overridingStyles]">啊啊啊</div>*@
+    @* 没看懂 *@
+    <div style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }">啊啊啊</div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+
+    <script>
+        //插值
+        new Vue({
+            data: {
+                a: 1,
+                rawHtml: '<span>haha</span>',
+                isButtonDisabled: true,
+                message: 'helloworld'
+            },
+            el: '#app-1',
+            created: function () {
+                // `this` 指向调用方法的Vue实例
+                console.log('a is: ' + this.a)
+            }
+        })
+
+        //指令
+        new Vue({
+            el: '#app-2',
+            data: {
+                myhref: 'http://www.baidu.com',
+                myattrname: 'href'
+            }
+        })
+
+        //计算属性
+        var vm3 = new Vue({
+            el: '#app-3',
+            data: {
+                message: 'hello world',
+                firstName: "jielun",
+                lastName: "zhou"
+            },
+            computed: {
+                //message在data中是响应式依赖，会在message改变后重新计算，meassage不改变而多次使用计算属性（存在缓存），不会重新计算
+                reversedMessageComputed: function () {
+                    return this.message.split('').reverse().join('');
+                },
+                //没有响应式依赖，不会更新
+                currentTimeComputed: function () {
+                    return Date.now();
+                },
+                //方法将默认注册给getter访问器，可以声明setter访问器
+                fullName: {
+                    get: function () {
+                        return this.firstName + ' ' + this.lastName;
+                    },
+                    set: function (val) {
+                        var names = val.split(' ');
+                        this.firstName = names[0];
+                        this.lastName = names[names.length - 1];
+                    }
+                }
+            },
+            //不存在缓存
+            methods: {
+                reversedMessage: function () {
+                    return this.message.split('').reverse().join('');
+                },
+                currentTime: function () {
+                    return Date.now();
+                }
+            }
+        })
+
+        //侦听器（侦听属性）
+        var vm4 = new Vue({
+            el: '#app-4',
+            data: {
+                question: '',
+                answer: 'I cannot give you an answer until you ask a question!'
+            },
+            watch: {
+                // 如果 `question` 发生改变，这个函数就会运行
+                question: function (newQuestion, oldQuestion) {
+                    this.answer = 'Waiting for you to stop typing...'
+                    this.debouncedGetAnswer()
+                }
+            },
+            created: function () {
+                // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+                // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
+                // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+                // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+                // 请参考：https://lodash.com/docs#debounce
+                this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+            },
+            methods: {
+                getAnswer: function () {
+                    if (this.question.indexOf('?') === -1) {
+                        this.answer = 'Questions usually contain a question mark. ;-)'
+                        return
+                    }
+                    this.answer = 'Thinking...'
+                    var vm = this
+                    axios.get('https://yesno.wtf/api')
+                      .then(function (response) {
+                          vm.answer = _.capitalize(response.data.answer)
+                      })
+                      .catch(function (error) {
+                          vm.answer = 'Error! Could not reach the API. ' + error
+                      })
+                }
+            }
+        })
+
+        //class绑定：v-bind:class的增强，表达式可以返回对象或数组
+        var vm5 = new Vue({
+            el: '#app-5',
+            data: {
+                isActive: true,
+                hasError: false,
+                activeClass: 'active',
+                errorClass: 'error',
+                classObject: {
+                    aaa: true
+                }
+            },
+            computed: {
+                classObj: function () {
+                    return {
+                        bbb: true,
+                        ccc: 1
+                    }
+                }
+            }
+        })
+
+        //style绑定
+        var vm6 = new Vue({
+            el: '#app-6',
+            data: {
+                activeColor: 'red',
+                fontSize: 30,
+                styleObject: {
+                    activeColor: 'red',
+                    fontSize: 30
+                }
+            }
+        })
+    </script>
+}
