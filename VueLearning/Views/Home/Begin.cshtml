@@ -41,14 +41,349 @@
         hahaha
     </div>
     @* 绑定对象不起作用？？
-    <div :style="styleObject">
-        hahaha
-    </div>*@
+        <div :style="styleObject">
+            hahaha
+        </div>*@
     @*baseStyles什么样子？
-    <div v-bind:style="[baseStyles, overridingStyles]">啊啊啊</div>*@
+        <div v-bind:style="[baseStyles, overridingStyles]">啊啊啊</div>*@
     @* 没看懂 *@
     <div style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }">啊啊啊</div>
 </div>
+<div id="app-7">
+    @* v-if 指令用于条件性地渲染一块内容。这块内容只会在指令的表达式返回 truthy 值的时候被渲染。 *@
+    <h1 v-if="awesome"> Vue is awesome</h1>
+    @* 也可以用 v-else 添加一个“else 块”，v-else元素必须紧跟在v-if元素后 *@
+    <h1 v-else>oh no</h1>
+    @* 将template当作看不见的包裹元素，进行元素的批量切换 *@
+    <template v-if="ok">
+        <h1>title</h1>
+        <p>paragraph 1</p>
+        <p>paragraph 2</p>
+    </template>
+    <template v-else>
+        <h2>是我</h2>
+    </template>
+    @* v-else-if,是v-if的else-if块，v-else-if必须跟在v-if后 *@
+    <span v-if="type == 'A'">是A</span>
+    <span v-else-if="type=='B'">是B</span>
+    <span v-else-if="type=='C'">是C</span>
+    <span v-else>不是ABC</span>
+    <br />
+    @* v-if切换时复用已有元素而不是从头开始渲染 *@
+    <template v-if="loginType=='userName'">
+        <label>userName</label>
+        <input placeholder="Enter Your userName" />
+    </template>
+    <template v-else>
+        <label>email</label>
+        <input placeholder="Enter Your Email" />
+    </template>
+    <button v-on:click="changeLoginType">用{{loginTypeText}}登录</button>
+    @* 为元素添加唯一的key来取消复用 *@
+    <template v-if="loginType=='userName'">
+        <label>userName</label>
+        <input placeholder="Enter Your userName" key="username-input" />
+    </template>
+    <template v-else>
+        <label>email</label>
+        <input placeholder="Enter Your Email" key="email-input" />
+    </template>
+    <button v-on:click="changeLoginType">用{{loginTypeText}}登录</button>
+
+    @* v-show指令，用法与v-if相同也是用于是否展示元素的指令，但是v-show会加载不显示的html，只是操作他们的display属性
+        并且v-show不能使用templat元素，也没有v-else。v-if是真正的加载和摧毁html
+    *@
+    <h1 v-show="ok">Hello!</h1>
+
+</div>
+<div id="app-8">
+    <ul>
+        @* 使用item in items的语句进行遍历，items是vm中的属性，item是别名
+            生成多个v-for所在的元素
+        *@
+        <li v-for="item in items">
+            {{item.message}}
+        </li>
+    </ul>
+    @* 还可以使用索引 *@
+    <ul>
+        <li v-for="(item,index) in items">
+            @* 可以直接访问所有父作用域的属性 *@
+            {{parentMessage}}-{{index}}-{{item.message}}
+        </li>
+    </ul>
+    @* 可以用of代替in *@
+    <ul>
+        <li v-for="(item,index) of items">
+            @* 可以直接访问所有父作用域的属性 *@
+            {{parentMessage}}-{{index}}-{{item.message}}
+        </li>
+    </ul>
+    @* 使用v-for遍历对象的属性 *@
+    <ul>
+        <li v-for="item of testObj">
+            {{item}}
+        </li>
+    </ul>
+    @* 遍历对象时第二个参数为属性名 第三个参数为索引*@
+    <ul>
+        <li v-for="(item,propName,index) in testObj">
+            {{propName}}:{{item}}-{{index}}
+        </li>
+    </ul>
+    @* v-for遍历的数组在元素顺序更改时，并不是对已渲染元素重新排序，而是完全重新渲染所有元素(就地渲染)
+        可以为遍历的元素添加唯一的key作为标识，这样将可以对已渲染元素作排序。建议使用v-for时指定key属性
+    *@
+    <div v-for="item in items" v-bind:key="item.id">
+        {{item.message}}-{{item.id}}
+    </div>
+    @*操作数组的变异方法 ，调用后会触发视图的更新
+         变异方法会改变调用方法的原始数组
+        push()：增加一个元素
+        pop()：移除最后一个元素
+        shift():移除第一个元素
+        unshift():
+        splice():
+        sort():
+        reverse():
+    *@
+    @*
+        替换数组：即非变异方法，调用后不会改变调用方法的原始数组,而是返回新数组，但新数组依然会被渲染到之前的view中
+            filter()
+            concat()
+            slice()
+    *@
+    @* 直接用索引设置数组项时，vue不能检测数组的变化
+        修改数组长度时，vue不能检测数组的变化,如下
+    *@
+    <span v-for="people in peoples">{{people}}-</span>
+    <button v-on:click="myClick">11</button>
+    @* 用以下方法更新数组，可以响应式触发view更新
+        Vue.set --全局静态方法
+        vm.$set --实例方法两个方法本质相同
+        Array.prototype.splice
+    *@
+    <span v-for="people in peoples">{{people}}-</span>
+    <button v-on:click="myClick1">11</button>
+    <button v-on:click="myClick2">22</button>
+    <button v-on:click="myClick3">33</button>
+    @* 对于已经创建的实例，Vue不允许动态的向根节点添加响应式属性，但是可以使用
+        Vue.set(object,propertyName,value)方法向嵌套对象中添加响应式属性
+        也可以使用vm.$set()*@
+    <ul>
+        <li v-for="(item,propName,index) in testObj">
+            {{propName}}:{{item}}-{{index}}
+        </li>
+    </ul>
+    <button v-on:click="myClick4">44</button>
+    @* 有时你可能需要为已有对象赋值多个新属性，比如使用 Object.assign() 或 _.extend()。
+            在这种情况下，你应该用两个对象的属性创建一个新的对象。所以，如果你想添加新的响应式属性，你应该这样做：
+         vm.userProfile = Object.assign({}, vm.userProfile, {
+          age: 27,
+          favoriteColor: 'Vue Green'
+        })
+            没看懂
+    *@
+
+    @* 显示过滤/排序后的结果，只是显示，不改变原始数据的值,使用计算属性[实际上是在回调的方法中使用非变异方法] *@
+    <div v-for="number in eventNumbers">{{number}}</div>
+    @* 也可以直接调方法 *@
+    <div v-for="number in event(numbers)">{{number}}</div>
+
+    @* 直接使用值范围 *@
+    <span v-for="n in 10">{{n}}</span>
+
+    @* 重复渲染多个元素：在template元素上使用v-for *@
+    <ul>
+        <template v-for="item in items">
+            <li>{{item.message}}</li>
+            <li>{{item.id}}</li>
+        </template>
+    </ul>
+    @* 不推荐v-for与v-if共同使用：当它们处于同一节点，v-for 的优先级比 v-if 更高，这意味着 v-if 将分别重复运行于每个 v-for 循环中
+        当你只想为部分项渲染节点时，这种优先级的机制会十分有用，如下：
+    *@
+    <ul>
+        <li v-for="todo in todos" v-if="!todo.isComplete">
+            {{ todo.id }}
+        </li>
+    </ul>
+    @* 而如果你的目的是有条件地跳过循环的执行，那么可以将 v-if 置于外层元素 (或 <template>)上 *@
+    <ul v-if="todos.length">
+        <li v-for="todo in todos">
+            {{ todo.id }}
+        </li>
+    </ul>
+    <p v-else>No todos left!</p>
+
+</div>
+<div id="app-9">
+    @* 可以直接绑定js代码 *@
+    <button v-on:click="counter+=1">add 1</button>
+    <span>{{counter}}</span>
+    @* 可以绑定methods中的方法 *@
+    <button v-on:click="greet">greet</button>
+    @* 可以在绑定的js中调用方法，并使用$event将原生dom事件显示的传入 *@
+    <button v-on:click="warn('Form cannot be submitted yet.', $event)">Submit</button>
+
+    @* 事件修饰符
+            修饰符是由点开头的指令后缀来表示的。
+        <!-- 阻止单击事件继续传播 -->
+        <a v-on:click.stop="doThis"></a>
+        <!-- 提交事件不再重载页面 -->
+        <form v-on:submit.prevent="onSubmit"></form>
+        <!-- 修饰符可以串联 -->
+        <a v-on:click.stop.prevent="doThat"></a>
+        <!-- 只有修饰符 -->
+        <form v-on:submit.prevent></form>
+        <!-- 添加事件监听器时使用事件捕获模式 -->
+        <!-- 即元素自身触发的事件先在此处理，然后才交由内部元素进行处理 -->
+        <div v-on:click.capture="doThis">...</div>
+        <!-- 只当在 event.target 是当前元素自身时触发处理函数 -->
+        <!-- 即事件不是从内部元素触发的 -->
+        <div v-on:click.self="doThat">...</div>
+        <!-- 点击事件将只会触发一次 -->
+        <a v-on:click.once="doThis"></a>
+        <!-- 滚动事件的默认行为 (即滚动行为) 将会立即触发 -->
+        <!-- 而不会等待 `onScroll` 完成  -->
+        <!-- 这其中包含 `event.preventDefault()` 的情况 -->
+        <div v-on:scroll.passive="onScroll">...</div>
+    *@
+
+    @* 按键修饰符
+        在监听键盘事件时，我们经常需要检查详细的按键。Vue 允许为 v-on 在监听键盘事件时添加按键修饰符：
+    <!-- 只有在 `key` 是 `Enter` 时调用 `vm.submit()` -->
+    <input v-on:keyup.enter="submit">
+    <!-- 你可以直接将 KeyboardEvent.key 暴露的任意有效按键名转换为 kebab-case 来作为修饰符。 -->
+    <input v-on:keyup.page-down="onPageDown">
+    *@
+    @*为了在必要的情况下支持旧浏览器，Vue 提供了绝大多数常用的按键码的别名：
+
+        .enter
+        .tab
+        .delete (捕获“删除”和“退格”键)
+        .esc
+        .space
+        .up
+        .down
+        .left
+        .right
+        你还可以通过全局 config.keyCodes 对象自定义按键修饰符别名：
+
+        // 可以使用 `v-on:keyup.f1`
+        Vue.config.keyCodes.f1 = 112
+    *@
+
+    @* 系统修饰键 仅在按下相应按键时才触发鼠标或键盘事件的监听器。
+    .ctrl
+    .alt
+    .shift
+    .meta（win）
+
+    <!-- Alt + C -->
+    <input @@keyup.alt .67="clear">
+
+    <!-- Ctrl + Click -->
+    <div @@click.ctrl="doSomething">Do something</div>
+    *@
+
+    @* .exact 修饰符允许你控制由精确的系统修饰符组合触发的事件。
+
+    <!-- 即使 Alt 或 Shift 被一同按下时也会触发 -->
+    <button @click.ctrl="onClick">A</button>
+
+    <!-- 有且只有 Ctrl 被按下的时候才触发 -->
+    <button @click.ctrl.exact="onCtrlClick">A</button>
+
+    <!-- 没有任何系统修饰符被按下的时候才触发 -->
+    <button @click.exact="onClick">A</button> *@
+
+    @* 鼠标按钮修饰符
+    .left
+    .right
+    .middle
+    这些修饰符会限制处理函数仅响应特定的鼠标按钮。
+    *@
+</div>
+<div id="app-10">
+    @* 文本 *@
+    <input v-model="message" placeholder="edit me"/>
+    <p>{{message}}</p>
+    @* 多行文本 在文本区域插值 (<textarea>{{text}}</textarea>) 并不会生效，应用 v-model 来代替。*@
+    <span>Multiline message is:</span>
+    <p style="white-space: pre-line;">{{ message }}</p>
+    <br>
+    <textarea v-model="message" placeholder="add multiple lines"></textarea>
+    @* 单个复选框 绑定到bool值*@
+    <input type="checkbox" v-model="checked"/>
+    <label>{{checked}}</label>
+    @* 多个复选框，绑定到同一个数组 会将选中的input 的value加入到数组中*@
+    <div >
+        <input type="checkbox" value="Jack" v-model="checkedNames">
+        <label>Jack</label>
+        <input type="checkbox" value="John" v-model="checkedNames">
+        <label>John</label>
+        <input type="checkbox" value="Mike" v-model="checkedNames">
+        <label>Mike</label>
+        <br>
+        <span>Checked names: {{ checkedNames }}</span>
+    </div>
+    @* 单选按钮 绑定到某个属性,会根据选项动态改变属性的类型，会将选择的value赋值给属性*@
+    <div >
+        <input type="radio" value=1 v-model="picked">
+        <label>One</label>
+        <br>
+        <input type="radio" value=2 v-model="picked">
+        <label>Two</label>
+        <br>
+        <span>Picked: {{ picked }}</span>
+    </div>
+    @* 单选下拉框 绑定到某个属性,会根据选项动态改变属性的类型，会将选项的value赋值给属性*@
+    <div >
+        <select v-model="selected">
+            <option disabled value="">请选择</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>1</option>
+        </select>
+        <span>Selected: {{ selected }}</span>
+    </div>
+    @* 多选下拉框 绑定到一个数组 *@
+    <div>
+        <select v-model="selecteds" multiple style="width: 50px;">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+        </select>
+        <br>
+        <span>Selected: {{ selecteds }}</span>
+    </div>
+    @* 使用v-for渲染的动态选项 *@
+    <select v-model="value">
+        <option v-for="option in options" v-bind:value="option.value">{{option.text}}</option>
+    </select>
+    <span>Selected: {{ value }}</span>
+    @* 值绑定 将控件的value使用v-bind绑定到动态属性上*@
+    <input type="radio" v-model="pick" v-bind:value="a">
+    {{pick}}
+        @* 修饰符
+    .lazy:在默认情况下，v-model 在每次 input 事件触发后将输入框的值与数据进行同步 (除了上述输入法组合文字时)。
+        你可以添加 lazy 修饰符，从而转变为使用 change 事件进行同步。
+    .number:如果想自动将用户的输入值转为数值类型，可以给 v-model 添加 number 修饰符,
+        这通常很有用，因为即使在 type="number" 时，HTML 输入元素的值也总会返回字符串。
+        如果这个值无法被 parseFloat() 解析，则会返回原始的值(字符串，即有能转的就保留能转的那部分，全不能转就不转了)。
+    .trim:如果要自动过滤用户输入的首尾空白字符，可以给 v-model 添加 trim 修饰符：
+        *@
+    <!-- 在“change”时而非“input”时更新 -->
+    <input v-model.lazy="msg">
+    {{msg}}
+    <input v-model.number="msgNumber">
+    {{msgNumber}}
+    <input v-model.trim="msg">
+    {{msg}}
+</div>
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
@@ -159,7 +494,7 @@
             }
         })
 
-        //class绑定：v-bind:class的增强，表达式可以返回对象或数组
+        //class绑定v-bind:class=""的增强，表达式可以返回对象或数组
         var vm5 = new Vue({
             el: '#app-5',
             data: {
@@ -181,7 +516,7 @@
             }
         })
 
-        //style绑定
+        //style绑定v-bind:style=""
         var vm6 = new Vue({
             el: '#app-6',
             data: {
@@ -193,5 +528,137 @@
                 }
             }
         })
+
+        //条件渲染v-if
+        var vm7 = new Vue({
+            el: '#app-7',
+            data: {
+                awesome: true,
+                ok: 1,
+                type: 'A',
+                loginType: 'userName',
+                loginTypeText: 'email'
+            },
+            methods: {
+                changeLoginType: function () {
+                    this.loginTypeText = this.loginType == 'userName' ? 'userName' : 'email';
+                    this.loginType = this.loginType == 'userName' ? 'email' : 'userName';
+                }
+            }
+        })
+
+        //列表渲染v-for
+        var vm8 = new Vue({
+            el: '#app-8',
+            data: {
+                parentMessage: 'Parent',
+                items: [
+                { message: 'Foo', id: 2 },
+                { message: 'Bar', id: 1 }
+                ],
+                testObj: {
+                    name: 'xiaoming',
+                    age: 18,
+                    gender: '男'
+                },
+                peoples: ['a', 'b', 'c'],
+                numbers: [1, 2, 3, 4, 5, 6, 7],
+                todos: [{ isComplete: false, id: 1 },
+                    { isComplete: true, id: 2 },
+                    { isComplete: false, id: 3 },
+                    { isComplete: true, id: 4 },
+                ]
+            },
+            computed: {
+                eventNumbers: function () {
+                    return this.numbers.filter(function (number) {
+                        return number % 2 === 0;
+                    })
+                }
+            },
+            methods: {
+                myClick: function () {
+                    peoples[1] = 'BBB'
+                },
+                myClick1: function () {
+                    Vue.set(vm8.peoples, 1, 'BBB')
+                },
+                myClick2: function () {
+                    vm8.peoples.splice(1, 1, 'CCC')
+                    //改变数组长度
+                    vm8.peoples.splice(4)
+                },
+                myClick3: function () {
+                    vm8.$set(vm8.peoples, 1, 'BBB')
+                },
+                myClick4: function () {
+                    Vue.set(vm8.testObj, 'aaa', 'AAA')
+                },
+                event: function (numbers) {
+                    return numbers.filter(function (number) {
+                        return number % 2 === 0;
+                    })
+                }
+            }
+        })
+
+        //事件处理v-on
+        var vm9 = new Vue({
+            el: '#app-9',
+            data: {
+                counter: 0,
+                name: 'Vue.js'
+            },
+            methods: {
+                greet: function (event) {
+                    //this指绑定事件的dom元素绑定的Vue实例（当前的Vue实例）
+                    alert('Hello ' + this.name);
+                    //event是原生dom事件
+                    if (event) {
+                        alert(event.target.tagName)
+                    }
+                },
+                warn: function (message, event) {
+                    // 现在我们可以访问原生事件对象,
+                    if (event) {
+                        //event.preventDefault()该方法将通知 Web 浏览器不要执行与事件关联的默认动作（如果存在这样的动作）
+                        //例如阻止表单提交
+                        //相似的event.stopPropagation()，终止事件在传播过程的捕获、目标处理或起泡阶段进一步传播
+                        //该方法将停止事件的传播，阻止它被分派到其他 Document 节点。
+                        //在事件传播的任何阶段都可以调用它。注意，虽然该方法不能阻止同一个 Document 节点上的其他事件句柄被调用，但是它可以阻止把事件分派到其他节点。
+                        event.preventDefault()
+                    }
+                    alert(message)
+                }
+
+            }
+        })
+
+        //表单输入绑定v-model:你可以用 v-model 指令在表单 <input>、<textarea> 及 
+        //<select> 元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。
+        var vm10 = new Vue({
+            el: '#app-10',
+            data: {
+                message: 'Hello Vue',
+                checked: false,
+                checkedNames:['aa'],
+                picked:2,
+                selected: 1,
+                selecteds: [],
+                value:'C',
+                options: [
+                     { text: 'One', value: 'A' },
+                     { text: 'Two', value: 'B' },
+                     { text: 'Three', value: 'C' }
+                ],
+                pick: 'ooo',
+                a: 'haha',
+                msg:'asdf',
+                msgNumber:123
+            }
+        })
+
+        //组件
+
     </script>
 }
