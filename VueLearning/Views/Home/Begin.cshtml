@@ -383,7 +383,24 @@
     <input v-model.trim="msg">
     {{msg}}
 </div>
-
+<div id="app-11">
+    <button-counter></button-counter>
+    <button-counter></button-counter>
+    <button-counter></button-counter>
+    <blog-post title="My journey with Vue"></blog-post>
+    <blog-post title="Blogging with Vue"></blog-post>
+    <blog-post title="Why Vue is so fun"></blog-post>
+    @* 可以用指令渲染组件
+     *@
+    <blog-post v-for="post in posts"
+               v-bind:key="post.id"
+               v-bind:title="post.title"></blog-post>
+    <div style="{ fontSize: postFontSize + 'em' }">
+        <blog-post v-for="post in posts"
+                   v-bind:key="post.id"
+                   v-bind:post="post.title"></blog-post>
+    </div>
+</div>
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
@@ -658,7 +675,40 @@
             }
         })
 
-        //组件
+        //组件:组件是可复用的 Vue 实例，且带有一个名字：在这个例子中是 <button-counter>。
+        //我们可以在一个通过 new Vue 创建的 Vue 根实例中，把这个组件作为自定义元素来使用：
+        // 定义一个名为 button-counter 的新组件
+        //一个组件的 data 选项必须是一个函数,因此每个实例可以维护一份被返回对象的独立的拷贝：实现了每个复用是独立的
+        //Vue.component全局注册：全局注册的组件可以用在其被注册之后的任何 (通过 new Vue) 新创建的 Vue 根实例，也包括其组件树中的所有子组件的模板中。
+        Vue.component('button-counter', {
+            data: function () {
+                return {
+                    count: 0
+                }
+            },
+            template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+        })
+        //Prop 使你可以在组件上注册的一些自定义特性。当一个值传递给一个 prop 特性的时候，它就变成了那个组件实例的一个属性。
+        Vue.component('blog-post', {
+            props: ['title'],
+            template: '<h3>{{ title }}</h3>'
+        })
 
+        var vm11 = new Vue({
+            el: '#app-11',
+            data: {
+                posts: [
+                     { id: 1, title: 'My journey with Vue' },
+                     { id: 2, title: 'Blogging with Vue' },
+                     { id: 3, title: 'Why Vue is so fun' }
+                ],
+                posts: [
+                    { id: 'aa', title: 'My journey with Vue' },
+                    { id: 'bb', title: 'Blogging with Vue' },
+                    { id: 'cc', title: 'Why Vue is so fun' }
+                ],
+                postFontSize: 1
+            }
+        })
     </script>
 }
