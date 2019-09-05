@@ -5,6 +5,8 @@
     {{a+1}}{{a===1?'yes':'no'}}
     {{message.split('').reverse().join('')}}
     <span v-bind:id="'span'+a">看我的id</span>
+    <div>{{myobj.name}}</div>
+    <input v-model="myobj.name"/>
 </div>
 <div id="app-2">
     @* 缩写 动态属性 *@
@@ -304,6 +306,16 @@
     .middle
     这些修饰符会限制处理函数仅响应特定的鼠标按钮。
     *@
+    aaaaa
+
+    <div v-for="question in questions" v-on:click="testClick(question,$event)">
+        dadadadada  {{question}} {{question.id}}-{{question.type}}-{{question.text}}
+    </div>
+
+    <div v-if="question != null">
+        bbb {{question.text}}
+    </div>
+
 </div>
 <div id="app-10">
     @* 文本 *@
@@ -407,12 +419,16 @@
 
     <script>
         //插值
+        var obj = {
+            name:'小明'
+        }
         new Vue({
             data: {
                 a: 1,
                 rawHtml: '<span>haha</span>',
                 isButtonDisabled: true,
-                message: 'helloworld'
+                message: 'helloworld',
+                myobj:obj
             },
             el: '#app-1',
             created: function () {
@@ -619,12 +635,21 @@
             }
         })
 
+        function QuestionListItem() {
+            id= 0;
+            type = '';
+            text = '';
+        }
+
         //事件处理v-on
         var vm9 = new Vue({
+            self : this,
             el: '#app-9',
             data: {
                 counter: 0,
-                name: 'Vue.js'
+                name: 'Vue.js',
+                questions: [],
+                question: null
             },
             methods: {
                 greet: function (event) {
@@ -646,8 +671,28 @@
                         event.preventDefault()
                     }
                     alert(message)
-                }
+                },
+                testClick: function (question,event)
+                {
+                    alert(self.name);
+                },
+                modifyClick: function ()
+                {
 
+                }
+            },
+            created: function () {
+                question: null;
+                var QuestionListItem1 = new QuestionListItem();
+                QuestionListItem1.id = 1;
+                QuestionListItem1.type = '大大大大阿达';
+                QuestionListItem1.text = 'bb';
+                this.questions.push(QuestionListItem1);
+                var QuestionListItem2 = new QuestionListItem();
+                QuestionListItem2.id = 2;
+                QuestionListItem2.type = 'cc';
+                QuestionListItem2.text = 'dd';
+                this.questions.push(QuestionListItem2);
             }
         })
 

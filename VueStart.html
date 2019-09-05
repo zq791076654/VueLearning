@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div id="testVue">
+        {{message}}
+        {{withSuffix}}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script>
+        var vue = new Vue({
+            el: "#testVue",
+            data: {
+                message: "Vue实例",
+                isShow: true
+            },
+            computed: {
+                withSuffix: function(){
+                    return this.message + "--firstVue";
+                }
+            },
+            methods: {
+                showClick: function () {
+                    vue.isShow = !vue.isShow;
+                }
+            },
+            created: function () {
+                this.message = "My First Vue";
+            }
+        })
+    </script>
+</body>
+</html>
